@@ -1,0 +1,119 @@
+apply plugin: 'com.android.application'
+
+
+
+
+String VERSION_NAME = "1.0"
+int VERSION_CODE = 20150625
+String build = 1
+boolean MULTI_FLAVORS = true
+
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        applicationId "com.itguai.blank"
+        minSdkVersion 15
+        targetSdkVersion 22
+        versionCode VERSION_CODE
+        versionName VERSION_NAME
+    }
+
+    signingConfigs {
+        releaseSigning {
+            storeFile file("C:\\Users\\Administrator\\mysign.jks")
+            storePassword "asdfasdf"
+            keyAlias "asdfasdf"
+            keyPassword "asdfasdf"
+        }
+    }
+
+    buildTypes {
+        def RELEASE = "RELEASE"
+        def BOOLEAN = "boolean"
+        def TRUE = "true"
+        def FALSE = "false"
+
+//        debug {
+//            buildConfigField BOOLEAN, RELEASE, FALSE
+//        }
+
+//        beta {
+//            buildConfigField BOOLEAN, RELEASE, FALSE
+//            proguardFile file("proguard-rules.txt")
+//            //noinspection GroovyAssignabilityCheck
+//            signingConfig signingConfigs.releaseSigning
+//            zipAlignEnabled true
+//            minifyEnabled true
+//            shrinkResources true
+//        }
+//
+        release {
+            buildConfigField BOOLEAN, RELEASE, TRUE
+//            proguardFile file("proguard-rules.txt")
+            proguardFiles getDefaultProguardFile('proguard-rules.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.releaseSigning
+            zipAlignEnabled true
+            minifyEnabled true
+            shrinkResources true
+        }
+    }
+
+    productFlavors {
+        if (MULTI_FLAVORS) {
+            wandoujia {}
+
+            anzhuo {}
+
+            qihu360 {}
+
+            xiaomi {}
+
+            weixin {}
+
+            baidu {}
+
+            zs91 {}
+
+        } else {
+        }
+    }
+}
+
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+
+    compile 'com.android.support:appcompat-v7:23.+'
+    compile 'com.android.support:support-v7:22.0.0'
+
+//    compile 'com.android.support:appcompat-v7:23.0.0'
+//    compile 'com.android.support:support-v7:23.2.1'
+//    compile 'com.android.support:design:23..1.1'
+
+    compile 'com.jakewharton:butterknife:8.2.1'
+//    apt 'com.jakewharton:butterknife-compiler:8.2.1'
+
+    compile project(path: ':biz')
+    compile project(path: ':restservice')
+    compile project(path: ':models')
+}
+
+
+
+android.applicationVariants.all { variant ->
+    // 渠道打包
+    variant.outputs.each { output ->
+        def outputFile = output.outputFile;
+        if (outputFile != null) {
+            def newName = outputFile.name.replace("app", VERSION_NAME);
+            output.outputFile = new File(outputFile.parentFile, newName);
+            if (output.zipAlign) {
+                output.zipAlign.outputFile = new File(outputFile.parentFile, newName.replace("-unaligned", ""));
+            }
+        }
+    }
+}
